@@ -21,13 +21,15 @@ import (
 	"fmt"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	"gopkg.in/gomail.v2"
+	"encoding/json"
 )
 
 type Customer struct{
 	PhoneNumber int `json:"PhoneNumber"`
+	Operator string `json:"Operator"`
 	Name string `json:"Name"`
 	Email string `json:"Email"`
-	Code int `json:"Code"`
+	Code string `json:"Code"`
 
 	//access code
 }
@@ -53,6 +55,8 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string
 	if err != nil {
 		return nil, err
 	}
+
+
 
 	return nil, nil
 }
@@ -156,4 +160,59 @@ func (t *SimpleChaincode) sendthemail(stub shim.ChaincodeStubInterface) ([]byte,
 	    }
 
 	return []byte("senddededed"), nil
+}
+
+func (t *SimpleChaincode) makeCustomer(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	//PhoneNumber, Owner, CusomerName, Code, Email
+	var customer_name, operator, code, email, phone_number string
+	var err error
+	phone_number = args[0]
+	cust, err := stub.GetState(phone_number)
+	var customerJSONBytes []byte
+
+	if err != nil {
+		return nil, errors.New("Failed to get customer")
+	} else if cust != nil{
+		return nil, errors.New("Customer already exists")
+	}
+
+	if len(args) != 5{
+		return nil, errors.New("Incorrect number of arguments. Expecting 5. name of the key and value to set")
+	}
+
+	operator = args[1]
+	customer_name = args[2]
+	code = args[3]
+	email = args[4]
+
+  customer := Customer{Operator: operator, Name: customer_name, Email: email, Code: code }
+  customerJSONBytes, err = json.Marshal(customer)
+	err = stub.PutState(phone_number, customerJSONBytes) //write the variable into the chaincode state
+	if err != nil {
+		return nil, err
+	}
+	return nil, nil
+}
+
+
+func (t *SimpleChaincode) getCustomerData(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	if len(args) != 1 {
+		return nil, errors.New("Incorrect number of arguments. Expecting 1")
+	}
+	var customer Customer
+	var phone_number string
+	phone_number = args[0]
+	var err error
+
+	customerJSONBytes, _ := stub.GetState(phone_number)
+
+	if customerJSONBytes != nil {
+		err = json.Unmarshal([]byte(customerJSONBytes), &customer)
+		if err != nil {
+			return nil, errors.New("Too bad")
+		}
+		return customerJSONBytes, nil
+	}
+
+	return nil, nil
 }
