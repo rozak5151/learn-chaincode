@@ -136,7 +136,7 @@ func (t *SimpleChaincode) makecustomer(stub shim.ChaincodeStubInterface, args []
 	var customer_name, operator, code, email, phone_number string
 	var err error
 	phone_number = args[0]
-	//var customerJSONBytes []byte
+	var customerJSONBytes []byte
 	cust, err := stub.GetState(phone_number)
 
 	if err == nil {
@@ -156,21 +156,21 @@ func (t *SimpleChaincode) makecustomer(stub shim.ChaincodeStubInterface, args []
 	code = args[3]
 	email = args[4]
 
-  //customer := Customer{Operator: operator, Name: customer_name, Email: email, Code: code }
-  //customerJSONBytes, err = json.Marshal(customer)
-	//if err != nil {
-	//	return nil, errors.New("Marshal operation went wrong")
-	//}
+  customer := Customer{Operator: operator, Name: customer_name, Email: email, Code: code }
+  customerJSONBytes, err = json.Marshal(customer)
+	if err != nil {
+		return nil, errors.New("Marshal operation went wrong")
+	}
 
-	str := `{
-		"PhoneNumber" : "` + phone_number + `",
-		"Operator" : "` + operator + `",
-		"Code" : "` + code + `",
-		"Email" : "` + email + `",
-		"Name" : "` + customer_name + `"
-		}`
+	// str := `{
+	// 	"PhoneNumber" : "` + phone_number + `",
+	// 	"Operator" : "` + operator + `",
+	// 	"Code" : "` + code + `",
+	// 	"Email" : "` + email + `",
+	// 	"Name" : "` + customer_name + `"
+	// 	}`
 
-	err = stub.PutState(phone_number, []byte(str)) //write the variable into the chaincode state
+	err = stub.PutState(phone_number, customerJSONBytes) //write the variable into the chaincode state
 	if err != nil {
 		return nil, err
 	}
