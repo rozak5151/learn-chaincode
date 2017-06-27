@@ -198,7 +198,7 @@ func (t *SimpleChaincode) getcustomerdata(stub shim.ChaincodeStubInterface, args
 		if err != nil {
 			return nil, errors.New("Too bad")
 		}
-		return customerJSONBytes, nil
+		return []byte(customer.Name), nil
 	}
 
 	return nil, nil
