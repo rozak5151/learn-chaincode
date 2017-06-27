@@ -19,7 +19,6 @@ package main
 import (
 	"errors"
 	"fmt"
-	"log"
 	"bytes"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	"encoding/json"
@@ -138,7 +137,6 @@ func (t *SimpleChaincode) makecustomer(stub shim.ChaincodeStubInterface, args []
 	var customer_name, operator, code, email, phone_number string
 	var err error
 	phone_number = args[0]
-	var customerJSONBytes []byte
 	var customer Customer
 	cust, err := stub.GetState(phone_number)
 
@@ -165,11 +163,7 @@ func (t *SimpleChaincode) makecustomer(stub shim.ChaincodeStubInterface, args []
 	customer.Email = email
 	customer.PhoneNumber = phone_number
 
-	var buf bytes.Buffer
-	logger := log.New(&buf, "logger: ", log.Lshortfile)
-	logger.Println(customer.Operator + " " + customer.Name + " " + customer.Code + " " + customer.Email + " " + customer.PhoneNumber)
-
-  customerJSONBytes, err = json.Marshal(customer)
+  customerJSONBytes, err := json.Marshal(customer)
 	if err != nil {
 		return nil, errors.New("Marshal operation went wrong")
 	}
@@ -184,7 +178,7 @@ func (t *SimpleChaincode) makecustomer(stub shim.ChaincodeStubInterface, args []
 
 	err = stub.PutState(phone_number, customerJSONBytes) //write the variable into the chaincode state
 	if err != nil {
-		return nil, err
+		return nil, errors.New("Unsuccesfull PutState")
 	}
 	return nil, nil
 }
@@ -205,13 +199,7 @@ func (t *SimpleChaincode) getcustomerdata(stub shim.ChaincodeStubInterface, args
 		return nil, errors.New("Failed to get state")
 	}
 
-	if customerJSONBytes != nil {
-		err = json.Unmarshal([]byte(customerJSONBytes), &customer)
-		if err != nil {
-			return nil, errors.New("Too bad")
-		}
-		return []byte(customer.Name), nil
-	}
+	json.Unmarshal(customerJSONBytes, &customer)
 
-	return nil, nil
+	return []byte(customer.Name), nil
 }
