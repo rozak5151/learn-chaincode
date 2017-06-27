@@ -24,7 +24,7 @@ import (
 )
 
 type Customer struct{
-	PhoneNumber int `json:"PhoneNumber"`
+	PhoneNumber string `json:"PhoneNumber"`
 	Operator string `json:"Operator"`
 	Name string `json:"Name"`
 	Email string `json:"Email"`
@@ -164,7 +164,7 @@ func (t *SimpleChaincode) makecustomer(stub shim.ChaincodeStubInterface, args []
 	customer.PhoneNumber = phone_number
 
 	fmt.Println(customer.Operator + " " + customer.Name + " " + customer.Code + " " + customer.Email + " " + customer.PhoneNumber)
-	
+
   customerJSONBytes, err = json.Marshal(customer)
 	if err != nil {
 		return nil, errors.New("Marshal operation went wrong")
