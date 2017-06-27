@@ -72,8 +72,8 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 		return t.write(stub, args)
 	} else if function == "sendthemail" {
 		return t.sendthemail(stub)
-	} else if function == "make_customer" {
-		return t.make_customer(stub, args)
+	} else if function == "makecustomer" {
+		return t.makecustomer(stub, args)
 	}
 	fmt.Println("invoke did not find func: " + function)
 
@@ -87,8 +87,8 @@ func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function strin
 	// Handle different functions
 	if function == "read" { //read a variable
 		return t.read(stub, args)
-	} else if function == "get_customer_data" {
-		return t.get_customer_data(stub, args)
+	} else if function == "getcustomerdata" {
+		return t.getcustomerdata(stub, args)
 	}
 	fmt.Println("query did not find func: " + function)
 
@@ -164,7 +164,7 @@ func (t *SimpleChaincode) sendthemail(stub shim.ChaincodeStubInterface) ([]byte,
 	return []byte("senddededed"), nil
 }
 
-func (t *SimpleChaincode) make_customer(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+func (t *SimpleChaincode) makecustomer(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	//PhoneNumber, Owner, CusomerName, Code, Email
 	var customer_name, operator, code, email, phone_number string
 	var err error
@@ -195,7 +195,7 @@ func (t *SimpleChaincode) make_customer(stub shim.ChaincodeStubInterface, args [
 }
 
 
-func (t *SimpleChaincode) get_customer_data(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+func (t *SimpleChaincode) getcustomerdata(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	if len(args) != 1 {
 		return nil, errors.New("Incorrect number of arguments. Expecting 1")
 	}
