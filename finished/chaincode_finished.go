@@ -137,17 +137,13 @@ func (t *SimpleChaincode) makecustomer(stub shim.ChaincodeStubInterface, args []
 	var err error
 	phone_number = args[0]
 	var customer Customer
-	cust, err := stub.GetState(phone_number)
+	_, err = stub.GetState(phone_number)
 
 	if err == nil {
 		return nil, errors.New("Customer already exists")
 	}
 
-	if cust != nil{
-		return nil, errors.New("Customer already exists")
-	}
-
-	if len(args) != 5{
+	if len(args) != 5 {
 		return nil, errors.New("Incorrect number of arguments. Expecting 5. name of the key and value to set")
 	}
 
@@ -167,17 +163,9 @@ func (t *SimpleChaincode) makecustomer(stub shim.ChaincodeStubInterface, args []
 		return nil, errors.New("Marshal operation went wrong")
 	}
 
-	// str := `{
-	// 	"PhoneNumber" : "` + phone_number + `",
-	// 	"Operator" : "` + operator + `",
-	// 	"Code" : "` + code + `",
-	// 	"Email" : "` + email + `",
-	// 	"Name" : "` + customer_name + `"
-	// 	}`
-
 	err = stub.PutState(phone_number, customerJSONBytes) //write the variable into the chaincode state
 	if err != nil {
-		return nil, errors.New("Unsuccesfull PutState")
+		return nil, err
 	}
 	return nil, nil
 }
@@ -187,15 +175,16 @@ func (t *SimpleChaincode) getcustomerdata(stub shim.ChaincodeStubInterface, args
 	if len(args) != 1 {
 		return nil, errors.New("Incorrect number of arguments. Expecting 1")
 	}
-	var customer Customer
-	var phone_number string
+	customer := Customer{}
+	var phone_number, jsonResp string
 	phone_number = args[0]
 	var err error
 
 	customerJSONBytes, err := stub.GetState(phone_number)
 
 	if err != nil {
-		return nil, errors.New("Failed to get state")
+		jsonResp = "{\"Error\":\"Failed to get state for " + phone_number + "\"}"
+		return nil, errors.New(jsonResp)
 	}
 
 	json.Unmarshal(customerJSONBytes, &customer)
