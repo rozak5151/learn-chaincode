@@ -174,9 +174,7 @@ func (t *SimpleChaincode) makeCustomer(stub shim.ChaincodeStubInterface, args []
 	cust, err := stub.GetState(phone_number)
 	var customerJSONBytes []byte
 
-	if err != nil {
-		return nil, errors.New("Failed to get customer")
-	} else if cust != nil{
+	if cust != nil{
 		return nil, errors.New("Customer already exists")
 	}
 
@@ -208,7 +206,11 @@ func (t *SimpleChaincode) getCustomerData(stub shim.ChaincodeStubInterface, args
 	phone_number = args[0]
 	var err error
 
-	customerJSONBytes, _ := stub.GetState(phone_number)
+	customerJSONBytes, err := stub.GetState(phone_number)
+
+	if err != nil {
+		return nil, errors.New("Failed to get state")
+	}
 
 	if customerJSONBytes != nil {
 		err = json.Unmarshal([]byte(customerJSONBytes), &customer)
