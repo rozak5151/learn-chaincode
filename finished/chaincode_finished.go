@@ -20,6 +20,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"bytes"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	"encoding/json"
 )
