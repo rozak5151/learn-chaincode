@@ -136,7 +136,7 @@ func (t *SimpleChaincode) makecustomer(stub shim.ChaincodeStubInterface, args []
 	var customer_name, operator, code, email, phone_number string
 	var err error
 	phone_number = args[0]
-	var customer Customer
+	customer := &Customer{}
 	_, err = stub.GetState(phone_number)
 
 	if err == nil {
@@ -175,7 +175,7 @@ func (t *SimpleChaincode) getcustomerdata(stub shim.ChaincodeStubInterface, args
 	if len(args) != 1 {
 		return nil, errors.New("Incorrect number of arguments. Expecting 1")
 	}
-	customer := Customer{}
+	customer := &Customer{}
 	var phone_number, jsonResp string
 	phone_number = args[0]
 	var err error
@@ -189,5 +189,5 @@ func (t *SimpleChaincode) getcustomerdata(stub shim.ChaincodeStubInterface, args
 
 	json.Unmarshal(customerJSONBytes, &customer)
 
-	return customerJSONBytes, nil
+	return []byte(customer.Name), nil
 }
