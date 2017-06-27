@@ -20,7 +20,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
-	"gopkg.in/gomail.v2"
 	"encoding/json"
 )
 
@@ -70,8 +69,6 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 		return t.Init(stub, "init", args)
 	} else if function == "write" {
 		return t.write(stub, args)
-	} else if function == "sendthemail" {
-		return t.sendthemail(stub)
 	} else if function == "makecustomer" {
 		return t.makecustomer(stub, args)
 	}
@@ -133,36 +130,6 @@ func (t *SimpleChaincode) read(stub shim.ChaincodeStubInterface, args []string) 
 	return valAsbytes, nil
 }
 
-func (t *SimpleChaincode) sendthemail(stub shim.ChaincodeStubInterface) ([]byte, error) {
-		// Set up authentication information.
-	// auth := smtp.PlainAuth("", "golangtest5@gmail.com", "SuperSecret5", "rozak5151@gmail.com")
-	//
-	// // Connect to the server, authenticate, set the sender and recipient,
-	// // and send the email all in one step.
-	// to := []string{"rozak5151@gmail.com"}
-	// msg := []byte("To: rozak5151@gmail.com\r\n" +
-	// 	"Subject: test message!\r\n" +
-	// 	"\r\n" +
-	// 	"This is the email body. lalalalalalalalalla\r\n")
-	// err := smtp.SendMail("smtp.gmail.com:587", auth, "golangtest5@gmail.com", to, msg)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	m := gomail.NewMessage()
-	    m.SetAddressHeader("From", "golangtest5@gmail.com", "test Sender")
-	    m.SetAddressHeader("To", "rozak5151@gmail.com", "Andrzej")
-	    m.SetHeader("Subject", "THis is subject!")
-	    m.SetBody("text/plain", "If you are reading this then u are reading this")
-
-	    d := gomail.NewPlainDialer("smtp.gmail.com", 587, "golangtest5", "SuperSecret5")
-
-	    if err := d.DialAndSend(m); err != nil {
-	        panic(err)
-	    }
-
-	return []byte("senddededed"), nil
-}
 
 func (t *SimpleChaincode) makecustomer(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	//PhoneNumber, Owner, CusomerName, Code, Email
