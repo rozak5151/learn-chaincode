@@ -19,6 +19,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"log"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	"encoding/json"
 )
@@ -163,7 +164,9 @@ func (t *SimpleChaincode) makecustomer(stub shim.ChaincodeStubInterface, args []
 	customer.Email = email
 	customer.PhoneNumber = phone_number
 
-	fmt.Println(customer.Operator + " " + customer.Name + " " + customer.Code + " " + customer.Email + " " + customer.PhoneNumber)
+	var buf bytes.Buffer
+	logger := log.New(&buf, "logger: ", log.Lshortfile)
+	logger.Println(customer.Operator + " " + customer.Name + " " + customer.Code + " " + customer.Email + " " + customer.PhoneNumber)
 
   customerJSONBytes, err = json.Marshal(customer)
 	if err != nil {
