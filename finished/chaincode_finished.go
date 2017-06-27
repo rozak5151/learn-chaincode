@@ -137,6 +137,7 @@ func (t *SimpleChaincode) makecustomer(stub shim.ChaincodeStubInterface, args []
 	var err error
 	phone_number = args[0]
 	var customerJSONBytes []byte
+	var customer Customer
 	cust, err := stub.GetState(phone_number)
 
 	if err == nil {
@@ -156,7 +157,14 @@ func (t *SimpleChaincode) makecustomer(stub shim.ChaincodeStubInterface, args []
 	code = args[3]
 	email = args[4]
 
-  customer := Customer{Operator: operator, Name: customer_name, Email: email, Code: code }
+  customer.Operator = operator
+	customer.Name = customer_name
+	customer.Code = code
+	customer.Email = email
+	customer.PhoneNumber = phone_number
+
+	fmt.Println(customer.Operator + " " + customer.Name + " " + customer.Code + " " + customer.Email + " " + customer.PhoneNumber)
+	
   customerJSONBytes, err = json.Marshal(customer)
 	if err != nil {
 		return nil, errors.New("Marshal operation went wrong")
