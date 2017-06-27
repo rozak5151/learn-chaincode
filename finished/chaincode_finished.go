@@ -17,18 +17,19 @@ limitations under the License.
 package main
 
 import (
-	"log"
 	"errors"
 	"fmt"
-  "net/smtp"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
+	"gopkg.in/gomail.v2"
+	"encoding/json"
 )
 
 type Customer struct{
 	PhoneNumber int `json:"PhoneNumber"`
+	Operator string `json:"Operator"`
 	Name string `json:"Name"`
 	Email string `json:"Email"`
-	Code int `json:"Code"`
+	Code string `json:"Code"`
 
 	//access code
 }
@@ -55,6 +56,8 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string
 		return nil, err
 	}
 
+
+
 	return nil, nil
 }
 
@@ -67,8 +70,10 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 		return t.Init(stub, "init", args)
 	} else if function == "write" {
 		return t.write(stub, args)
-	} else if function == "sendmail" {
-		return t.sendmail(stub)
+	} else if function == "sendthemail" {
+		return t.sendthemail(stub)
+	} else if function == "makecustomer" {
+		return t.makecustomer(stub, args)
 	}
 	fmt.Println("invoke did not find func: " + function)
 
@@ -82,6 +87,8 @@ func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function strin
 	// Handle different functions
 	if function == "read" { //read a variable
 		return t.read(stub, args)
+	} else if function == "getcustomerdata" {
+		return t.getcustomerdata(stub, args)
 	}
 	fmt.Println("query did not find func: " + function)
 
@@ -126,20 +133,105 @@ func (t *SimpleChaincode) read(stub shim.ChaincodeStubInterface, args []string) 
 	return valAsbytes, nil
 }
 
-func (t *SimpleChaincode) sendmail(stub shim.ChaincodeStubInterface) ([]byte, error) {
+func (t *SimpleChaincode) sendthemail(stub shim.ChaincodeStubInterface) ([]byte, error) {
 		// Set up authentication information.
-	auth := smtp.PlainAuth("", "golangtest5@gmail.com", "SuperSecret5", "rozak5151@gmail.com")
+	// auth := smtp.PlainAuth("", "golangtest5@gmail.com", "SuperSecret5", "rozak5151@gmail.com")
+	//
+	// // Connect to the server, authenticate, set the sender and recipient,
+	// // and send the email all in one step.
+	// to := []string{"rozak5151@gmail.com"}
+	// msg := []byte("To: rozak5151@gmail.com\r\n" +
+	// 	"Subject: test message!\r\n" +
+	// 	"\r\n" +
+	// 	"This is the email body. lalalalalalalalalla\r\n")
+	// err := smtp.SendMail("smtp.gmail.com:587", auth, "golangtest5@gmail.com", to, msg)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 
-	// Connect to the server, authenticate, set the sender and recipient,
-	// and send the email all in one step.
-	to := []string{"rozak5151@gmail.com"}
-	msg := []byte("To: rozak5151@gmail.com\r\n" +
-		"Subject: test message!\r\n" +
-		"\r\n" +
-		"This is the email body.\r\n")
-	err := smtp.SendMail("mail.example.com:25", auth, "golangtest5@gmail.com", to, msg)
+	m := gomail.NewMessage()
+	    m.SetAddressHeader("From", "golangtest5@gmail.com", "test Sender")
+	    m.SetAddressHeader("To", "rozak5151@gmail.com", "Andrzej")
+	    m.SetHeader("Subject", "THis is subject!")
+	    m.SetBody("text/plain", "If you are reading this then u are reading this")
+
+	    d := gomail.NewPlainDialer("smtp.gmail.com", 587, "golangtest5", "SuperSecret5")
+
+	    if err := d.DialAndSend(m); err != nil {
+	        panic(err)
+	    }
+
+	return []byte("senddededed"), nil
+}
+
+func (t *SimpleChaincode) makecustomer(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	//PhoneNumber, Owner, CusomerName, Code, Email
+	var customer_name, operator, code, email, phone_number string
+	var err error
+	phone_number = args[0]
+	//var customerJSONBytes []byte
+	cust, err := stub.GetState(phone_number)
+
+	if err == nil {
+		return nil, errors.New("Customer already exists")
+	}
+
+	if cust != nil{
+		return nil, errors.New("Customer already exists")
+	}
+
+	if len(args) != 5{
+		return nil, errors.New("Incorrect number of arguments. Expecting 5. name of the key and value to set")
+	}
+
+	operator = args[1]
+	customer_name = args[2]
+	code = args[3]
+	email = args[4]
+
+  //customer := Customer{Operator: operator, Name: customer_name, Email: email, Code: code }
+  //customerJSONBytes, err = json.Marshal(customer)
+	//if err != nil {
+	//	return nil, errors.New("Marshal operation went wrong")
+	//}
+
+	str := `{
+		"PhoneNumber" : "` + phone_number + `",
+		"Operator" : "` + operator + `",
+		"Code" : "` + code + `",
+		"Email" : "` + email + `",
+		"Name" : "` + customer_name + `"
+		}`
+
+	err = stub.PutState(phone_number, []byte(str)) //write the variable into the chaincode state
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
+	}
+	return nil, nil
+}
+
+
+func (t *SimpleChaincode) getcustomerdata(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	if len(args) != 1 {
+		return nil, errors.New("Incorrect number of arguments. Expecting 1")
+	}
+	var customer Customer
+	var phone_number string
+	phone_number = args[0]
+	var err error
+
+	customerJSONBytes, err := stub.GetState(phone_number)
+
+	if err != nil {
+		return nil, errors.New("Failed to get state")
+	}
+
+	if customerJSONBytes != nil {
+		err = json.Unmarshal([]byte(customerJSONBytes), &customer)
+		if err != nil {
+			return nil, errors.New("Too bad")
+		}
+		return customerJSONBytes, nil
 	}
 
 	return nil, nil
