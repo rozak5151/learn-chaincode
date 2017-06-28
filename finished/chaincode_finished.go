@@ -33,6 +33,10 @@ type Customer struct{
 	//access code
 }
 
+type TheSimple struct{
+
+}
+
 // SimpleChaincode example simple Chaincode implementation
 type SimpleChaincode struct {
 }
@@ -132,11 +136,28 @@ func (t *SimpleChaincode) read(stub shim.ChaincodeStubInterface, args []string) 
 
 
 func (t *SimpleChaincode) makecustomer(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+
+	// var key, value string
+	// var err error
+	// fmt.Println("running write()")
+	//
+	// if len(args) != 2 {
+	// 	return nil, errors.New("Incorrect number of arguments. Expecting 2. name of the key and value to set")
+	// }
+	//
+	// key = args[0] //rename for funsies
+	// value = args[1]
+	// err = stub.PutState(key, []byte(value)) //write the variable into the chaincode state
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// return nil, nil
+
 	//PhoneNumber, Owner, CusomerName, Code, Email
 	var customer_name, operator, code, email, phone_number string
 	var err error
 	phone_number = args[0]
-	customer := &Customer{}
+	customer := new(Customer)
 	_, err = stub.GetState(phone_number)
 
 	if err == nil {
@@ -158,7 +179,7 @@ func (t *SimpleChaincode) makecustomer(stub shim.ChaincodeStubInterface, args []
 	customer.Email = email
 	customer.PhoneNumber = phone_number
 
-  customerJSONBytes, err := json.Marshal(customer)
+  customerJSONBytes, err := json.Marshal(&customer)
 	if err != nil {
 		return nil, errors.New("Marshal operation went wrong")
 	}
@@ -175,7 +196,7 @@ func (t *SimpleChaincode) getcustomerdata(stub shim.ChaincodeStubInterface, args
 	if len(args) != 1 {
 		return nil, errors.New("Incorrect number of arguments. Expecting 1")
 	}
-	customer := &Customer{}
+	customer := new(Customer)
 	var phone_number, jsonResp string
 	phone_number = args[0]
 	var err error
