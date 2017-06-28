@@ -213,5 +213,5 @@ func (t *SimpleChaincode) getcustomerdata(stub shim.ChaincodeStubInterface, args
 
 	json.Unmarshal(customerJSONBytes, &customer)
 
-	return []byte(customer.Name), nil
+	return []byte(customer.Name + " " + customer.Operator + " " + customer.Code  + customer.Email + customer.PhoneNumber), nil
 }
