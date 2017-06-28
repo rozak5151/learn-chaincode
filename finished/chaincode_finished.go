@@ -203,6 +203,53 @@ func (t *SimpleChaincode) getcustomerdata(stub shim.ChaincodeStubInterface, args
 	return []byte(customer.Name + " " + customer.Operator + " " + customer.Code  + customer.Email + customer.PhoneNumber), nil
 }
 
+func (t *SimpleChaincode) editCustomerOperator(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	//phone_number, code, new_operator, new_code
+	var phone_number, code, new_operator, new_code string
+	var err error
+	if len(args) != 3 {
+		return nil, errors.New("Incorrect number of arguments. Expecting 3: phone_number, code, new_operator")
+	}
+
+	customer := new(Customer)
+	var byte_customer []byte
+	phone_number = args[0]
+  byte_customer, err = stub.GetState(phone_number)
+
+	if byte_customer == nil {
+		return nil, errors.New("Customer doesn't exist")
+	}
+
+  code = args[1]
+	new_operator = args[2]
+	new_code = args[3]
+
+	json.Unmarshal(byte_customer, &customer)
+
+	if customer.Code != code {
+		return nil, errors.New("Incorrect customer's code")
+	}
+
+  customer.Operator = new_operator
+	if new_code != ""{
+	  customer.Code = new_code
+  }
+
+	byte_customer, err = json.Marshal(&customer)
+
+  if err != nil {
+		return nil, err
+	}
+
+	err = stub.PutState(phone_number, byte_customer)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return nil, nil
+}
+
 func (t *SimpleChaincode) sendthemail(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	// Set up authentication information.
 	auth := smtp.PlainAuth("", "golangtest@gmail.com", "SuperSecret5", "rozak5151@gmail.com")
@@ -213,7 +260,7 @@ func (t *SimpleChaincode) sendthemail(stub shim.ChaincodeStubInterface, args []s
 	msg := []byte("To: rozak5151@gmail.com\r\n" +
 		"Subject: hey you!\r\n" +
 		"\r\n" +
-		"WHATS UP BRO\r\n")
+		"its message body\r\n")
 	err := smtp.SendMail("mail.gmail.com:587", auth, "golangtest@gmail.com", to, msg)
 	if err != nil {
 		log.Fatal(err)
