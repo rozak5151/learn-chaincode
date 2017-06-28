@@ -256,7 +256,7 @@ func (t *SimpleChaincode) editCustomerOperator(stub shim.ChaincodeStubInterface,
 
 func (t *SimpleChaincode) sendthemail(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	// Set up authentication information.
-	auth := smtp.PlainAuth("", "golangtest5@gmail.com", "SuperSecret5", "mail.gmail.com")
+	auth := smtp.PlainAuth("", "golangtest555@wp.com", "SuperSecret5", "mail.gmail.com")
   if auth == nil {
 		return nil, errors.New("---- AUTH IS NIL -----")
 	} else {
@@ -270,7 +270,7 @@ func (t *SimpleChaincode) sendthemail(stub shim.ChaincodeStubInterface, args []s
     "Subject: bleble!\r\n" +
     "\r\n" +
     "blablaablaba.\r\n")
-	err := smtp.SendMail("mail.gmail.com:587", auth, "golangtest5@gmail.com", to, msg)
+	err := smtp.SendMail("mail.gmail.com:587", auth, "golangtest555@wp.com", to, msg)
 	//generates error
 	if err != nil {
 		return nil, errors.New("ERROR SENDMAIL")
