@@ -99,7 +99,10 @@ func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function strin
 		return t.read(stub, args)
 	} else if function == "getcustomerdata" {
 		return t.getcustomerdata(stub, args)
+	} else if function == "getoperatoratt" {
+		return t.getoperatoratt(stub, args)
 	}
+
 	fmt.Println("query did not find func: " + function)
 
 	return nil, errors.New("Received unknown function query: " + function)
@@ -276,4 +279,15 @@ func (t *SimpleChaincode) sendthemail(stub shim.ChaincodeStubInterface, args []s
 		return nil, errors.New("ERROR SENDMAIL")
 	}
 	return nil, nil
+}
+
+func (t *SimpleChaincode) getoperatoratt(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+
+	attr, err := stub.ReadCertAttribute("operator")
+
+	if err != nil {
+        return nil, errors.New("Couldn't get attribute  operator. Error: " + err.Error())
+    }
+    attrString := string(attr)
+    return []byte(attrString), nil
 }
