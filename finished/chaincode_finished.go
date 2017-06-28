@@ -272,7 +272,7 @@ func (t *SimpleChaincode) sendthemail(stub shim.ChaincodeStubInterface, args []s
     "blablaablaba.\r\n")
 	err := smtp.SendMail("mail.gmail.com:587", auth, "golangtest@gmail.com", to, msg)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("ERROR SENDMAIL")
 	}
 	return nil, nil
 }
