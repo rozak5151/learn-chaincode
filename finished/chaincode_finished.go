@@ -157,18 +157,19 @@ func (t *SimpleChaincode) makecustomer(stub shim.ChaincodeStubInterface, args []
 	//PhoneNumber, Owner, CusomerName, Code, Email
 	var customer_name, operator, code, email, phone_number string
 	var err error
+	var test_customer Customer
 	phone_number = args[0]
 	customer := new(Customer)
-	_, err = stub.GetState(phone_number)
+	test_customer, err = stub.GetState(phone_number)
 
-	if err == nil {
-		return nil, errors.New("Customer already exists")
+	if test_customer != nil {
+		return nil, errors.New("-------------============@@@@@@@@Customer already exists@@@@@@@===========----------------\n")
 	}
 
 	if len(args) != 5 {
 		return nil, errors.New("Incorrect number of arguments. Expecting 5. name of the key and value to set")
 	}
-
+  ftm.Println("CREATING CUSTOMER")
 	operator = args[1]
 	customer_name = args[2]
 	code = args[3]
