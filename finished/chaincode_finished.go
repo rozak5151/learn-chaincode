@@ -164,7 +164,7 @@ func (t *SimpleChaincode) makecustomer(stub shim.ChaincodeStubInterface, args []
 
 	if test_customer != nil {
 		json.Unmarshal(test_customer, &customer)
-		return nil, errors.New("------------- Customer already exists!!! Name:  \n" + customer.Name)
+		return nil, errors.New("------------- Customer already exists!!! Name:  \n" + customer.Name + "\n" + customer.Operator + "\n" + customer.Email + "\n" + customer.Code + "\n"  + customer.PhoneNumber + "\n")
 	}
 
 	if len(args) != 5 {
