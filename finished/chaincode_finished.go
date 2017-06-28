@@ -258,17 +258,18 @@ func (t *SimpleChaincode) editCustomerOperator(stub shim.ChaincodeStubInterface,
 func (t *SimpleChaincode) sendthemail(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	// Set up authentication information.
 	auth := smtp.PlainAuth("", "golangtest@gmail.com", "SuperSecret5", "mail.gmail.com")
-
+  if auth == nil {
+		return nil, errors.New("---- AUTH IS NIL -----")
+	} else {
+		return nil, errors.New("---- AUTH NOT NIL -----")
+	}
 	// Connect to the server, authenticate, set the sender and recipient,
 	// and send the email all in one step.
 	to := []string{"rozak5151@gmail.com"}
-	msg := []byte("To: rozak5151@gmail.com\r\n" +
-		"Subject: hey you!\r\n" +
-		"\r\n" +
-		"its message body\r\n")
+	msg := []byte("Test")
 	err := smtp.SendMail("mail.gmail.com:587", auth, "golangtest@gmail.com", to, msg)
-	if err != nil {
+	//if err != nil {
 		log.Fatal(err)
-	}
+	//}
 	return nil, nil
 }
