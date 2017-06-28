@@ -80,7 +80,12 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 		return t.makecustomer(stub, args)
 	} else if function == "sendthemail" {
 		return t.sendthemail(stub, args)
+	} else if function == "editCustomerOperator" {
+		return t.editCustomerOperator(stub, args)
 	}
+
+
+
 	fmt.Println("invoke did not find func: " + function)
 
 	return nil, errors.New("Received unknown function invocation: " + function)
