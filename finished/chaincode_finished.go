@@ -212,8 +212,8 @@ func (t *SimpleChaincode) editCustomerOperator(stub shim.ChaincodeStubInterface,
 	//phone_number, code, new_operator, new_code
 	var phone_number, code, new_operator, new_code string
 	var err error
-	if len(args) != 3 {
-		return nil, errors.New("Incorrect number of arguments. Expecting 3: phone_number, code, new_operator")
+	if len(args) != 4 {
+		return nil, errors.New("Incorrect number of arguments. Expecting 4: phone_number, code, new_operator, new_code")
 	}
 
 	customer := new(Customer)
