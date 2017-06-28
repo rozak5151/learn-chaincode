@@ -22,7 +22,6 @@ import (
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	"encoding/json"
 	"net/smtp"
-	"log"
 )
 
 type Customer struct{
