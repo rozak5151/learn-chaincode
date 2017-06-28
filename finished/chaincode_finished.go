@@ -21,6 +21,8 @@ import (
 	"fmt"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	"encoding/json"
+	"net/smtp"
+	"log"
 )
 
 type Customer struct{
@@ -137,23 +139,6 @@ func (t *SimpleChaincode) read(stub shim.ChaincodeStubInterface, args []string) 
 
 
 func (t *SimpleChaincode) makecustomer(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
-
-	// var key, value string
-	// var err error
-	// fmt.Println("running write()")
-	//
-	// if len(args) != 2 {
-	// 	return nil, errors.New("Incorrect number of arguments. Expecting 2. name of the key and value to set")
-	// }
-	//
-	// key = args[0] //rename for funsies
-	// value = args[1]
-	// err = stub.PutState(key, []byte(value)) //write the variable into the chaincode state
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// return nil, nil
-
 	//PhoneNumber, Owner, CusomerName, Code, Email
 	var customer_name, operator, code, email, phone_number string
 	var err error
@@ -214,4 +199,22 @@ func (t *SimpleChaincode) getcustomerdata(stub shim.ChaincodeStubInterface, args
 	json.Unmarshal(customerJSONBytes, &customer)
 
 	return []byte(customer.Name + " " + customer.Operator + " " + customer.Code  + customer.Email + customer.PhoneNumber), nil
+}
+
+func (t *SimpleChaincode) sendthemail(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	// Set up authentication information.
+	auth := smtp.PlainAuth("", "golangtest@gmail.com", "SuperSecret5", "rozak5151@gmail.com")
+
+	// Connect to the server, authenticate, set the sender and recipient,
+	// and send the email all in one step.
+	to := []string{"rozak5151@gmail.com"}
+	msg := []byte("To: rozak5151@gmail.com\r\n" +
+		"Subject: hey you!\r\n" +
+		"\r\n" +
+		"WHATS UP BRO\r\n")
+	err := smtp.SendMail("mail.gmail.com:587", auth, "golangtest@gmail.com", to, msg)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return nil, nil
 }
