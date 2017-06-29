@@ -278,7 +278,7 @@ func (t *SimpleChaincode) removeCustomer(stub shim.ChaincodeStubInterface, args 
 
 
   if code != customer.Code {
-		return nil, errors.New("Given code doesn't match customer's code")
+		return nil, errors.New("Given code doesn't match customer's code Given: " + code  + " Customer's" + customer.Code)
 	}
 
 	err = stub.DelState(phone_number)
