@@ -81,9 +81,9 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 		return t.sendthemail(stub, args)
 	} else if function == "editCustomerOperator" {
 		return t.editCustomerOperator(stub, args)
+	} else if function == "removeCustomer" {
+		return t.removeCustomer(stub, args)
 	}
-
-
 
 	fmt.Println("invoke did not find func: " + function)
 
