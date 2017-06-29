@@ -158,11 +158,11 @@ func (t *SimpleChaincode) makecustomer(stub shim.ChaincodeStubInterface, args []
 
 	if test_customer != nil {
 		json.Unmarshal(test_customer, &customer)
-		return nil, errors.New("------------- Customer already exists!!! Name:  \n" + customer.Name + "\n" + customer.Operator + "\n" + customer.Email + "\n" + customer.Code + "\n"  + customer.PhoneNumber + "\n")
+		return nil, errors.New("Customer already exists!")
 	}
 
 	if len(args) != 5 {
-		return nil, errors.New("Incorrect number of arguments. Expecting 5. name of the key and value to set")
+		return nil, errors.New("Incorrect number of arguments. Expecting 5: PhoneNumber, Owner, CustomerName, Code, Email")
 	}
   fmt.Println("CREATING CUSTOMER")
 	operator = args[1]
@@ -193,6 +193,7 @@ func (t *SimpleChaincode) getcustomerdata(stub shim.ChaincodeStubInterface, args
 	if len(args) != 1 {
 		return nil, errors.New("Incorrect number of arguments. Expecting 1")
 	}
+
 	customer := new(Customer)
 	var phone_number, jsonResp string
 	phone_number = args[0]
@@ -252,6 +253,38 @@ func (t *SimpleChaincode) editCustomerOperator(stub shim.ChaincodeStubInterface,
 
 	if err != nil {
 		return nil, err
+	}
+
+	return nil, nil
+}
+
+func (t *SimpleChaincode) removeCustomer(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	//PhoneNumber, COde
+	if len(args) != 2 {
+		return nil, errors.New("Incorrect number of arguments. Expecting 2: phone_number, code")
+	}
+
+	var phone_number, code string
+	customer := new(Customer)
+	phone_number = args[0]
+	code = args[1]
+	byte_customer, err := stub.GetState(phone_number)
+
+	if err != nil {
+		return nil, errors.New("Failed to get customer from the ledger. Customer doesn't exit.")
+	}
+
+  json.Unmarshal(byte_customer, &customer)
+
+
+  if code != customer.Code {
+		return nil, errors.New("Given code doesn't match customer's code")
+	}
+
+	err = stub.DelState(phone_number)
+
+	if err != nil {
+		return nil, errors.New("Failed to remove customer.")
 	}
 
 	return nil, nil
