@@ -270,7 +270,7 @@ func (t *SimpleChaincode) removeCustomer(stub shim.ChaincodeStubInterface, args 
 	code = args[1]
 	byte_customer, err := stub.GetState(phone_number)
 
-	if err != nil {
+	if byte_customer != nil {
 		return nil, errors.New("Failed to get customer from the ledger. Customer doesn't exit.")
 	}
 
